@@ -8,7 +8,7 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const uri = process.env.ATLAS_URI;
+const uri = process.env.ATLAS_URI_2;
 
 // const { client } = require('./config/index');
 const routes = require("./src/routes");
