@@ -16,6 +16,7 @@ exports.addUser = async (req, res) => {
       fullname: Joi.string().min(3).required(),
       email: Joi.string().email().min(6).required(),
       password: Joi.string().min(4).required(),
+      veriviedStatus: false,
     });
 
     const { error } = schema.validate(req.body);
@@ -45,11 +46,11 @@ exports.addUser = async (req, res) => {
     const result = await Users(user).save();
 
     res.send({
-      status: "User success added!",
+      status: "Success!",
+      message: "User successfully registered!",
       result: result,
     });
   } catch (error) {
-    console.log(error);
     res.send({
       status: "Failed",
       error: error,
@@ -63,31 +64,30 @@ exports.loginUser = async (req, res) => {
 
     const user = await Users.findOne({ email }, "email password").exec();
 
-    console.log(user);
-
     if (!user)
       return res.status(400).send({
-        message: "Your Credentials is not valid EMAIL SALAH",
+        message: "Your Credentials is not valid",
       });
 
     const validPass = await bcrypt.compare(password, user.password);
 
     if (!validPass)
       return res.status(400).send({
-        message: "Your Credentials is not valid PASSWORD SALAH",
+        message: "Your Credentials is not valid",
       });
 
     const secretKey = process.env.SECRETKEY;
     const token = sign({ email }, secretKey);
 
     res.send({
-      status: "Login success!",
+      status: "Success!",
+      message: "Login success!",
       user: user.email,
       token,
     });
   } catch (error) {
     res.status(500).send({
-      status: "userControllers",
+      status: "Failed",
       error,
     });
   }
@@ -95,19 +95,20 @@ exports.loginUser = async (req, res) => {
 
 exports.checkAuth = async (req, res) => {
   try {
-    const id = req.jwt.id;
+    const email = req.jwt.email;
     console.log(req.jwt);
 
-    console.log(id);
-
-    const result = await Users.findOne({
-      _id: id,
-    }).exec();
+    const result = await Users.findOne({ email }, "-_id -password").exec();
 
     res.send({
-      result,
+      status: "Success!",
+      message: "User authenticated!",
+      user: result,
     });
   } catch (error) {
-    console.log(error);
+    res.status(500).send({
+      status: "Failed!",
+      error,
+    });
   }
 };
