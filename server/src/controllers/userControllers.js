@@ -1,5 +1,7 @@
-const { sign } = require("jsonwebtoken")
-const { default: Users } = require("../../models/userSchema")
+const { sign } = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
+const Joi = require("joi");
+const { default: Users } = require("../../models/userSchema");
 // "fullname"  : String,
 // "nickname"  : String,
 // "email"     : String,
@@ -7,77 +9,105 @@ const { default: Users } = require("../../models/userSchema")
 // "phone"     : Number
 
 exports.addUser = async (req, res) => {
-    try {
-        const result = await Users(req.body).save()
+  try {
+    const { fullname, email, password } = req.body;
 
-        console.log("User successfully added!")
-        console.log(result._id)
+    const schema = Joi.object({
+      fullname: Joi.string().min(3).required(),
+      email: Joi.string().email().min(6).required(),
+      password: Joi.string().min(4).required(),
+    });
 
-        res.send({
-            "status" : "User success added!",
-            "result" : result
-        })
-    } catch (error) {
-        console.log(error)
-        res.send({
-            "status" : "Failed",
-            "error" : error
-        })
+    const { error } = schema.validate(req.body);
+
+    if (error)
+      return res.status(400).send({
+        message: error.details[0].message,
+      });
+
+    const checkData = await Users.findOne({ email }, "email").exec();
+
+    if (checkData) {
+      return res.status(400).send({
+        status: "Failed",
+        message: `Email already exsited`,
+      });
     }
-}
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await Users.create({
+      fullname,
+      email,
+      password: hashedPassword,
+    });
+
+    const result = await Users(user).save();
+
+    res.send({
+      status: "User success added!",
+      result: result,
+    });
+  } catch (error) {
+    console.log(error);
+    res.send({
+      status: "Failed",
+      error: error,
+    });
+  }
+};
 
 exports.loginUser = async (req, res) => {
-    try {
-        const {email, password} = req.body
-        const result = await Users.findOne({email, password}, "_id email nickname password").exec()
+  try {
+    const { email, password } = req.body;
 
-        if (!result) 
-            return res.status(400).send({
-                "status": "Login failed",
-                "message": "Email atau password salah!"
-            })
+    const user = await Users.findOne({ email }, "email password").exec();
 
-        console.log(result._id)
+    console.log(user);
 
-        const secretKey = process.env.SECRETKEY
-        const token = sign({id:result._id}, secretKey)
+    if (!user)
+      return res.status(400).send({
+        message: "Your Credentials is not valid EMAIL SALAH",
+      });
 
-        if (email === result.email && password === result.password) {
-            res.send({
-                "status": "Login success!",
-                "user" : {
-                    "_id" : result._id,
-                    "nickname" : result.nickname,
-                    "email" : result.email,
-                    token,
-                },
-            })
-        } 
-    } catch (error) {
-        res.status(500).send({
-            "status" : "userControllers",
-            error,
-        })
-        
-    }
-}
+    const validPass = await bcrypt.compare(password, user.password);
+
+    if (!validPass)
+      return res.status(400).send({
+        message: "Your Credentials is not valid PASSWORD SALAH",
+      });
+
+    const secretKey = process.env.SECRETKEY;
+    const token = sign({ email }, secretKey);
+
+    res.send({
+      status: "Login success!",
+      user: user.email,
+      token,
+    });
+  } catch (error) {
+    res.status(500).send({
+      status: "userControllers",
+      error,
+    });
+  }
+};
 
 exports.checkAuth = async (req, res) => {
-    try {
-        const id = req.jwt.id;
-        console.log(req.jwt);
+  try {
+    const id = req.jwt.id;
+    console.log(req.jwt);
 
-        console.log(id)
-    
-        const result = await Users.findOne({
-            _id: id,
-        }).exec()
+    console.log(id);
 
-        res.send({
-            result
-        })
+    const result = await Users.findOne({
+      _id: id,
+    }).exec();
 
-    } catch (error) {
-        console.log(error)
-    }
-}
+    res.send({
+      result,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};

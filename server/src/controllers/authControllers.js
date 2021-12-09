@@ -16,7 +16,7 @@ exports.loginAuth = (req, res, next) => {
     const verified = jwt.verify(token, secretKey);
 
     (req.jwt = verified),
-      console.log("hasil req verified in auth", verified.id);
+      console.log("hasil req verified in auth", verified.email);
 
     next();
   } catch (error) {
