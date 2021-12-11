@@ -7,7 +7,11 @@ exports.loginAuth = (req, res, next) => {
     !(header = req.header("Authorization")) ||
     !(token = header.replace("Bearer ", ""))
   )
-    return res.status(400).send({
+    // {
+    //   return next();
+    // }
+    return res.send({
+      status: "failed",
       message: "Access Denied",
     });
 

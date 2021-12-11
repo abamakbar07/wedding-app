@@ -5,42 +5,42 @@ export const AppContext = createContext();
 const initialState = {
   context: "globalContext",
   isLogin: false,
-  message: "Not Login"
+  loading: true,
+  error: {},
 };
 
 const reducer = (state, action) => {
   switch (action.type) {
     case "LOGIN":
-        localStorage.setItem("LOGIN", true);
-    //   localStorage.setItem("token", action.payload.token);
+      localStorage.setItem("token", action.payload.token);
       return {
         ...state,
         isLogin: true,
-        message: action.payload.message
-        
-    };
-    // case "AUTH_ERROR":
-    // case "LOGIN_REQUEST":
-    //   localStorage.setItem(
-        //     "loginrequest_code",
-        //     action.payload.loginRequest.code
-        //   );
-    //   return {
-    //     ...state,
-    //     loginRequest: action.payload.loginRequest,
-    //   };
-    // case "SET_TOKEN":
-    //   localStorage.setItem("token", action.payload.token);
-    //   return {
-        //     ...state,
-        //   };
-        case "LOGOUT":
-            localStorage.removeItem("LOGIN");
-            //   localStorage.removeItem("loginrequest_code");
-            return {
-                ...state,
-                isLogin: false,
-                message: action.payload.message
+        error: "",
+      };
+    case "AUTH_ERROR":
+      return {
+        ...state,
+        error: action.payload.message,
+      };
+    case "USER_LOADED":
+      return {
+        ...state,
+        isLogin: true,
+        userData: action.payload,
+        error: "",
+      };
+    case "LOGOUT":
+      localStorage.removeItem("token");
+      return {
+        ...state,
+        isLogin: false,
+        error: "",
+      };
+    case "ERROR":
+      return {
+        ...state,
+        error: action.payload.message,
       };
     default:
       throw new Error();

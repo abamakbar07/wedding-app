@@ -1,14 +1,13 @@
-import axios from 'axios'
-
-export const instagramAPI = axios.create({
-  baseURL: "https://graph.instagram.com",
-});
+import axios from "axios";
 
 export const API = axios.create({
-// base url for deploy to heroku
-  // baseURL: "/api/v1/",
-
-// base url for local developing
-  baseURL: "http://localhost:5000/api/v1/",
-
+  baseURL: "http://localhost:5000/api/v1",
 });
+
+export const setAuthToken = (token) => {
+  if (token) {
+    API.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete API.defaults.headers.common["Authorization"];
+  }
+};
