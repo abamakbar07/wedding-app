@@ -41,6 +41,10 @@ exports.addUser = async (req, res) => {
       fullname,
       email,
       password: hashedPassword,
+      verified: {
+        status: false,
+        otpCode: null,
+      },
     });
 
     const result = await Users(user).save();
