@@ -1,7 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
+import { Button, Card } from "react-bootstrap";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import "./App.css";
 import { AppContext } from "./Components/context/GlobalContext";
 import FormLogin from "./Components/FormLogin.jsx";
+import NavigationBar from "./Components/NavigationBar";
 import { API, setAuthToken } from "./Config/api";
 
 if (localStorage.token) {
@@ -25,7 +28,6 @@ function App() {
       }
 
       if (response.config.headers["Authorization"]) {
-        console.log(response);
         dispatch({
           type: "USER_LOADED",
           payload: response.data.user,
@@ -39,30 +41,25 @@ function App() {
     }
   };
 
+  const Home = () => {
+    return <div>WELCOME TO WEDDING APP</div>;
+  };
+
   useEffect(() => {
     checkUser();
-    // if (!localStorage.LOGIN) {
-    //   dispatch({
-    //     type: "LOGOUT",
-    //     payload: {
-    //       message: "You must be login first!",
-    //     },
-    //   });
-    // } else {
-    //   dispatch({
-    //     type: "LOGIN",
-    //     payload: {
-    //       message: "Yourelogin Now!",
-    //     },
-    //   });
-    // }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="App">
-      {JSON.stringify(state)}
-      <FormLogin />
-    </div>
+    <Router>
+      <NavigationBar />
+      <div className="App">
+        {JSON.stringify(state)}
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<FormLogin />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

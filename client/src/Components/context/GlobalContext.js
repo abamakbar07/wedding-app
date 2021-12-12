@@ -5,6 +5,7 @@ export const AppContext = createContext();
 const initialState = {
   context: "globalContext",
   isLogin: false,
+  userData: null,
   loading: true,
   error: {},
 };
@@ -35,6 +36,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLogin: false,
+        userData: null,
         error: "",
       };
     case "ERROR":

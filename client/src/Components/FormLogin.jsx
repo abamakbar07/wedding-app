@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
-import { API, setAuthToken } from "../Config/api";
+import { API } from "../Config/api";
 import { AppContext } from "./context/GlobalContext";
 
 const FormLogin = () => {
@@ -57,7 +57,7 @@ const FormLogin = () => {
   return (
     <>
       {loading ? <h1>Loading dulu gaes</h1> : <></>}
-
+      LOGIN FORM
       <div className="FormLogin">
         <Form>
           <Form.Group className="mb-3" controlId="formBasicEmail">
