@@ -6,8 +6,18 @@ const initialState = {
   context: "globalContext",
   isLogin: false,
   userData: null,
-  loading: true,
-  error: {},
+  auth: {
+    status: false,
+    message: null,
+  },
+  error: {
+    status: false,
+    message: null,
+  },
+  notification: {
+    status: false,
+    message: null,
+  },
 };
 
 const reducer = (state, action) => {
@@ -17,19 +27,40 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLogin: true,
-        error: "",
+        error: {
+          status: false,
+          message: null,
+        },
+      };
+    case "REGISTER":
+      return {
+        ...state,
+        notification: {
+          status: true,
+          message: action.payload,
+        },
       };
     case "AUTH_ERROR":
       return {
         ...state,
-        error: action.payload.message,
+        auth: {
+          status: false,
+          message: action.payload.message,
+        },
       };
     case "USER_LOADED":
       return {
         ...state,
         isLogin: true,
+        auth: {
+          status: true,
+          message: "User Authorized",
+        },
         userData: action.payload,
-        error: "",
+        error: {
+          status: false,
+          message: null,
+        },
       };
     case "LOGOUT":
       localStorage.removeItem("token");
@@ -37,12 +68,34 @@ const reducer = (state, action) => {
         ...state,
         isLogin: false,
         userData: null,
-        error: "",
+        error: {
+          status: false,
+          message: null,
+        },
+      };
+    case "PUSH_NOTIF":
+      return {
+        ...state,
+        notification: {
+          status: true,
+          message: action.payload,
+        },
+      };
+    case "CLOSE_NOTIF":
+      return {
+        ...state,
+        notification: {
+          status: false,
+          message: null,
+        },
       };
     case "ERROR":
       return {
         ...state,
-        error: action.payload.message,
+        error: {
+          status: true,
+          message: action.payload.message,
+        },
       };
     default:
       throw new Error();

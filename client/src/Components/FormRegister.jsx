@@ -1,14 +1,16 @@
-import React, { useContext } from "react";
-import { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Form } from "react-bootstrap";
 import { API } from "../Config/api";
 import { AppContext } from "./context/GlobalContext";
 
-const FormLogin = () => {
+const FormRegister = () => {
   const [state, dispatch] = useContext(AppContext);
+
+  console.log(state.error.status ? "true" : "false");
 
   const [loading, setLoading] = useState(false);
   const [body, setBody] = useState({
+    fullname: "",
     email: "",
     password: "",
   });
@@ -17,18 +19,19 @@ const FormLogin = () => {
     setBody({ ...body, [e.target.name]: e.target.value });
   };
 
-  const logginButton = async (e) => {
+  const registerButton = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await API.post("/login-user", body);
+      const response = await API.post("/add-user", body);
 
       console.log(response);
 
       setLoading(false);
+
       return dispatch({
-        type: "LOGIN",
-        payload: response.data,
+        type: "REGISTER",
+        payload: response.data.message,
       });
     } catch (error) {
       setLoading(false);
@@ -39,27 +42,22 @@ const FormLogin = () => {
     }
   };
 
-  const logoutButton = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      setLoading(false);
-      return dispatch({
-        type: "LOGOUT",
-      });
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
-  };
-
   return (
     <>
       {loading ? <h1>Loading dulu gaes</h1> : <></>}
-      <div className="FormLogin">
+      <div className="FormRegister">
         <h1>LOGIN FORM</h1>
-        <Form className="bg-white text-black">
+        <Form className="bg-light text-black Q Q">
+          <Form.Group className="mb-3" controlId="formName">
+            <Form.Label>Full name</Form.Label>
+            <Form.Control
+              type="name"
+              name="fullname"
+              placeholder="Enter your fullname"
+              onChange={(e) => onChange(e)}
+            />
+          </Form.Group>
+
           <Form.Group className="mb-3" controlId="formBasicEmail">
             <Form.Label>Email address</Form.Label>
             <Form.Control
@@ -79,11 +77,8 @@ const FormLogin = () => {
               onChange={(e) => onChange(e)}
             />
           </Form.Group>
-          <Button
-            variant="primary"
-            onClick={state.isLogin ? logoutButton : logginButton}>
-            {/* {state.isLogin ? "LOGOUT" : "LOGIN"} */}
-            LOGIN
+          <Button variant="primary" onClick={registerButton}>
+            REGISTER
           </Button>
         </Form>
       </div>
@@ -92,4 +87,4 @@ const FormLogin = () => {
   );
 };
 
-export default FormLogin;
+export default FormRegister;
