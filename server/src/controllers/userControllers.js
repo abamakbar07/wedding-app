@@ -66,7 +66,10 @@ exports.loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await Users.findOne({ email }, "email password").exec();
+    const user = await Users.findOne(
+      { email },
+      "email fullname password"
+    ).exec();
 
     if (!user)
       return res.status(400).send({
@@ -86,7 +89,10 @@ exports.loginUser = async (req, res) => {
     res.send({
       status: "Success!",
       message: "Login success!",
-      user: user.email,
+      user: {
+        email: user.email,
+        fullname: user.fullname,
+      },
       token,
     });
   } catch (error) {

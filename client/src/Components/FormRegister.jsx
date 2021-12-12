@@ -44,7 +44,6 @@ const FormRegister = () => {
 
   return (
     <>
-      {loading ? <h1>Loading dulu gaes</h1> : <></>}
       <div className="FormRegister">
         <h1>LOGIN FORM</h1>
         <Form className="bg-light text-black Q Q">

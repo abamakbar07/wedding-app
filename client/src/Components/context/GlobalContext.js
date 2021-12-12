@@ -5,7 +5,9 @@ export const AppContext = createContext();
 const initialState = {
   context: "globalContext",
   isLogin: false,
-  userData: null,
+  userData: {
+    fullname: null,
+  },
   auth: {
     status: false,
     message: null,
@@ -27,6 +29,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLogin: true,
+        userData: action.payload.user,
         error: {
           status: false,
           message: null,
@@ -67,7 +70,9 @@ const reducer = (state, action) => {
       return {
         ...state,
         isLogin: false,
-        userData: null,
+        userData: {
+          fullname: null,
+        },
         error: {
           status: false,
           message: null,

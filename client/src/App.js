@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -20,12 +20,14 @@ if (localStorage.token) {
 
 function App() {
   const [state, dispatch] = useContext(AppContext);
+  const [loading, setLoading] = useState(true);
 
   console.log(state);
 
   const checkUser = async () => {
     try {
       const response = await API.get("/check-auth");
+      setLoading(false);
 
       if (response.data.status === "failed") {
         return dispatch({
@@ -50,30 +52,45 @@ function App() {
     }
   };
 
-  const Home = () => {
-    return <div>WELCOME TO WEDDING APP</div>;
+  const Home = (props) => {
+    return (
+      <div>
+        <NavigationBar /> WELCOME {props.user} TO WEDDING APP
+      </div>
+    );
   };
 
   useEffect(() => {
     checkUser();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
+  // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Router>
       <NavigationBar />
       <NotificationModal notif={state.notification} />
       <div className="App">
+        {loading ? <h1>LOADING GAES</h1> : null}
         {/* {JSON.stringify(state)} */}
 
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={<Home user={state.userData.fullname} exact />}
+          />
           <Route
             path="/logout"
             element={state.isLogin ? <LogoutPage /> : <Navigate to="/" />}
           />
           <Route
             path="/login"
-            element={state.isLogin ? <Navigate to="/" /> : <FormLogin />}
+            element={
+              state.isLogin ? (
+                <Navigate to="/" />
+              ) : (
+                <FormLogin loading={loading} setLoading={setLoading} />
+              )
+            }
           />
           <Route
             path="/register"

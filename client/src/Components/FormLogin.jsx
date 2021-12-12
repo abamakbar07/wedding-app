@@ -1,13 +1,17 @@
 import React, { useContext } from "react";
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
+// import { useNavigate } from "react-router-dom";
 import { API } from "../Config/api";
 import { AppContext } from "./context/GlobalContext";
 
-const FormLogin = () => {
+const FormLogin = (props) => {
   const [state, dispatch] = useContext(AppContext);
+  const loading = props.loading;
+  const setLoading = props.setLoading;
+  // const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [body, setBody] = useState({
     email: "",
     password: "",
@@ -22,14 +26,13 @@ const FormLogin = () => {
     setLoading(true);
     try {
       const response = await API.post("/login-user", body);
-
-      console.log(response);
-
       setLoading(false);
-      return dispatch({
+
+      dispatch({
         type: "LOGIN",
         payload: response.data,
       });
+      // navigate("/");
     } catch (error) {
       setLoading(false);
       dispatch({
@@ -39,20 +42,20 @@ const FormLogin = () => {
     }
   };
 
-  const logoutButton = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  // const logoutButton = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
 
-    try {
-      setLoading(false);
-      return dispatch({
-        type: "LOGOUT",
-      });
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    }
-  };
+  //   try {
+  //     setLoading(false);
+  //     return dispatch({
+  //       type: "LOGOUT",
+  //     });
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.log(error);
+  //   }
+  // };
 
   return (
     <>
@@ -79,9 +82,7 @@ const FormLogin = () => {
               onChange={(e) => onChange(e)}
             />
           </Form.Group>
-          <Button
-            variant="primary"
-            onClick={state.isLogin ? logoutButton : logginButton}>
+          <Button variant="primary" onClick={logginButton}>
             {/* {state.isLogin ? "LOGOUT" : "LOGIN"} */}
             LOGIN
           </Button>
