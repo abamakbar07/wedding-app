@@ -9,6 +9,7 @@ import "./App.css";
 import { AppContext } from "./Components/context/GlobalContext";
 import FormLogin from "./Components/FormLogin.jsx";
 import FormRegister from "./Components/FormRegister";
+import Loading from "./Components/Loading";
 import LogoutPage from "./Components/LogoutPage";
 import NavigationBar from "./Components/NavigationBar";
 import NotificationModal from "./Components/NotificationModal";
@@ -39,39 +40,41 @@ function App() {
       }
 
       if (response.config.headers["Authorization"]) {
-        dispatch({
+        return dispatch({
           type: "USER_LOADED",
           payload: response.data.user,
         });
       }
     } catch (error) {
-      dispatch({
+      setLoading(false);
+      return dispatch({
         type: "ERROR",
-        payload: error.response.data,
+        payload: error.response,
       });
     }
   };
 
   const Home = (props) => {
     return (
-      <div>
-        <NavigationBar /> WELCOME {props.user} TO WEDDING APP
-      </div>
+      <>
+        <h1>{props.user}</h1>
+        <div>WELCOME TO WEDDING APP</div>
+      </>
     );
   };
 
   useEffect(() => {
     checkUser();
-  }, []);
-  // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <Router>
       <NavigationBar />
-      <NotificationModal notif={state.notification} />
+      <NotificationModal notif={state.notification} error={state.error} />
       <div className="App">
-        {loading ? <h1>LOADING GAES</h1> : null}
         {/* {JSON.stringify(state)} */}
+
+        <Loading isLoading={loading} />
 
         <Routes>
           <Route
@@ -94,7 +97,13 @@ function App() {
           />
           <Route
             path="/register"
-            element={state.isLogin ? <Navigate to="/" /> : <FormRegister />}
+            element={
+              state.isLogin ? (
+                <Navigate to="/" />
+              ) : (
+                <FormRegister loading={loading} setLoading={setLoading} />
+              )
+            }
           />
         </Routes>
       </div>

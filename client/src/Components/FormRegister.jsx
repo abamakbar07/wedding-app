@@ -3,12 +3,11 @@ import { Button, Form } from "react-bootstrap";
 import { API } from "../Config/api";
 import { AppContext } from "./context/GlobalContext";
 
-const FormRegister = () => {
+const FormRegister = (props) => {
   const [state, dispatch] = useContext(AppContext);
+  const loading = props.loading;
+  const setLoading = props.setLoading;
 
-  console.log(state.error.status ? "true" : "false");
-
-  const [loading, setLoading] = useState(false);
   const [body, setBody] = useState({
     fullname: "",
     email: "",
@@ -24,11 +23,7 @@ const FormRegister = () => {
     setLoading(true);
     try {
       const response = await API.post("/add-user", body);
-
-      console.log(response);
-
       setLoading(false);
-
       return dispatch({
         type: "REGISTER",
         payload: response.data.message,
@@ -45,7 +40,7 @@ const FormRegister = () => {
   return (
     <>
       <div className="FormRegister">
-        <h1>LOGIN FORM</h1>
+        <h1>REGISTER FORM</h1>
         <Form className="bg-light text-black Q Q">
           <Form.Group className="mb-3" controlId="formName">
             <Form.Label>Full name</Form.Label>

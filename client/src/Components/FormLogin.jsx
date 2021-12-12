@@ -37,7 +37,7 @@ const FormLogin = (props) => {
       setLoading(false);
       dispatch({
         type: "ERROR",
-        payload: error.response.data,
+        payload: error.response.data.message,
       });
     }
   };
@@ -59,7 +59,6 @@ const FormLogin = (props) => {
 
   return (
     <>
-      {loading ? <h1>Loading dulu gaes</h1> : <></>}
       <div className="FormLogin">
         <h1>LOGIN FORM</h1>
         <Form className="bg-white text-black">

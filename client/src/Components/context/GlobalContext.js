@@ -93,13 +93,17 @@ const reducer = (state, action) => {
           status: false,
           message: null,
         },
+        error: {
+          status: false,
+          message: null,
+        },
       };
     case "ERROR":
       return {
         ...state,
         error: {
           status: true,
-          message: action.payload.message,
+          message: action.payload,
         },
       };
     default:

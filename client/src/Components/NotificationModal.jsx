@@ -1,19 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Button, Modal } from "react-bootstrap";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "./context/GlobalContext";
 
 const NotificationModal = (props) => {
   const navigate = useNavigate();
-  const isRegister = props.notif.message == "User successfully registered!";
+  const [state, dispatch] = useContext(AppContext);
+  const isRegister = props.notif.message === "User successfully registered!";
+  const isError = props.error.status;
   const [show, setShow] = useState(false);
   const handleShow = () => setShow(true);
   const handleClose = () => {
     if (isRegister) navigate("/login");
     setShow(false);
+    return dispatch({
+      type: "CLOSE_NOTIF",
+    });
   };
 
   const notif = () => {
-    if (props.notif.status) {
+    if (props.notif.status || props.error.status) {
       handleShow();
     } else {
       handleClose();
@@ -21,8 +27,8 @@ const NotificationModal = (props) => {
   };
 
   useEffect(() => {
-    notif();
-  }, [props]);
+    notif(); // eslint-disable-next-line
+  }, [state.notification.status || state.error.status]);
 
   return (
     <>
@@ -32,10 +38,14 @@ const NotificationModal = (props) => {
         backdrop="static"
         keyboard={false}>
         <Modal.Header closeButton>
-          <Modal.Title>{props.notif.message}</Modal.Title>
+          <Modal.Title>
+            {props.notif.message || props.error.message}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleClose}>
+          <Button
+            variant={isError ? "danger" : "primary"}
+            onClick={handleClose}>
             {isRegister ? "Login now" : "Understod"}
           </Button>
         </Modal.Footer>

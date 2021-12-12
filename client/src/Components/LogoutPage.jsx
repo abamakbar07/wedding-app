@@ -7,7 +7,7 @@ const LogoutPage = () => {
   useEffect(() => {
     dispatch({
       type: "LOGOUT",
-    });
+    }); // eslint-disable-next-line
   }, []);
 
   return (
