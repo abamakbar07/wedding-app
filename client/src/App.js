@@ -55,9 +55,18 @@ function App() {
   };
 
   const Home = (props) => {
+    const loginGa = props.user;
     return (
       <>
-        <h1>{props.user}</h1>
+        {loginGa === null ? (
+          <></>
+        ) : props.verified === true ? (
+          <>
+            <h1>{props.user}</h1>
+          </>
+        ) : (
+          <h1>Verified before use the app </h1>
+        )}
         <div>WELCOME TO WEDDING APP</div>
       </>
     );

@@ -16,7 +16,7 @@ exports.addUser = async (req, res) => {
       fullname: Joi.string().min(3).required(),
       email: Joi.string().email().min(6).required(),
       password: Joi.string().min(4).required(),
-      veriviedStatus: false,
+      verifiedStatus: false,
     });
 
     const { error } = schema.validate(req.body);
@@ -40,11 +40,9 @@ exports.addUser = async (req, res) => {
     const user = await Users.create({
       fullname,
       email,
+      verifiedStatus: false,
+      verifiedToken: fullname + 1,
       password: hashedPassword,
-      verified: {
-        status: false,
-        otpCode: null,
-      },
     });
 
     const result = await Users(user).save();
